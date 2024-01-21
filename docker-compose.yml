@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  auth:
+    build: ./auth
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV= development
+      - MONGODB_URI=mongodb://mongo:27017/fathoni-zikri-nugroho
+    depends_on:
+      - mongo
+  user:
+    build: ./users
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV= development
+      - MONGODB_URI=mongodb://mongo:27017/fathoni-zikri-nugroho
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
+      - REDIS_URL=redis://redis:6379
+      - AUTH_URL=http://auth:4000/api/auth/token
+    depends_on:
+      - mongo
+      - auth
+      - redis
+  mongo:
+    image: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - data-db:/data/db
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+
+volumes:
+  data-db:
