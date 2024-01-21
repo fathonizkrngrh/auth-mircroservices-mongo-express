@@ -121,6 +121,10 @@ const updateUser = async (req, res) => {
         Object.assign(user, body);
         console.log(user)
         await user.save();
+
+        const cacheKey = req.originalUrl.split('?')[0]
+
+        invalidateCache(cacheKey)
     
         return res
             .status(StatusCodes.OK)
@@ -143,6 +147,8 @@ const deleteUser = async (req, res) => {
     
     try {
         await user.remove();
+
+        invalidateCache('/api/user/')
     
         return res
             .status(StatusCodes.OK)
